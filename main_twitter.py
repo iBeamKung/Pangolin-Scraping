@@ -1,0 +1,507 @@
+# from cgi import test
+# from tracemalloc import start
+from ast import keyword
+from itertools import count
+from turtle import pos
+import tweepy
+import pandas as pd
+
+# import re
+# import emoji
+# import nltk
+# import pythainlp
+# from langdetect import detect as detect_lang
+
+import spacy
+
+import time as time
+from datetime import datetime as datetime
+import os
+import sys
+import json
+import shutil
+from tqdm import tqdm
+
+from datetime import date, timedelta
+from datetime import datetime as datetime
+
+from threading import Thread
+
+import eel
+
+import main_NLP
+
+
+
+class Twitter_API:
+    def __init__(self):
+        
+        consumer_key = "****** You-API-Key ******"
+        consumer_secret = "****** You-API-Key ******"
+        access_token = "****** You-API-Key ******"
+        access_token_secret = "****** You-API-Key ******"
+        
+        self.auth = tweepy.OAuthHandler(consumer_key, consumer_secret)
+        self.auth.set_access_token(access_token, access_token_secret)
+        self.api = tweepy.API(self.auth)
+        
+        self.nlp = main_NLP.NLP()
+        
+        #self.thread_list = []
+        
+        self.filterkeyword = []
+        
+        #self.stat_tweet = []
+    
+    def twitter_clawer(self,keyword,thisdate,limit):
+        
+        #print("Collect Tweet :",keyword,"Date :",thisdate)
+        
+        data = {thisdate:[]}
+        tweet_list = []
+        index_count = 0
+        
+        progress = 0
+        
+        eel.set_progress_text("Clawer Tweet - " + "Keyword : " + keyword + " Date : " + thisdate + " - " + "0" + "/" + str(limit))
+        eel.set_progress(limit,progress)
+        
+        pbar = tqdm(total=limit)
+        pbar.set_description("Keyword : "+keyword+" Date : "+thisdate)
+        
+        for tweet in tweepy.Cursor(self.api.search_tweets, q=keyword+"-filter:retweets"+"", count=100, until=thisdate, result_type="recent", tweet_mode='extended').items(limit):
+            # get time
+            time = tweet.created_at
+            create_at = datetime.strptime(str(time), '%Y-%m-%d %H:%M:%S%z').astimezone().date()
+            
+            create_at = str(create_at)
+
+            #print("Create : ",create_at)
+            
+            #check date
+            if str(create_at) != str(thisdate):
+                pbar.total = index_count
+                pbar.close()
+                #print("break",create_at,":",thisdate)
+                break
+            
+            #get id
+            id = tweet.id
+
+            # get hashtag
+            entity_hashtag = tweet.entities.get('hashtags')
+            hashtag = []
+            for i in range(0,len(entity_hashtag)):
+                hashtag.append(entity_hashtag[i]["text"])
+
+            # get favorite count & texts
+            try:
+                text = tweet.retweeted_status.full_text
+                fav_count = tweet.retweeted_status.favorite_count
+            except:
+                text = tweet.full_text
+                fav_count = tweet.favorite_count
+            text = text.replace('\n', ' ')
+            text = text.replace(',', ' ')
+            
+            # get reweet count
+            re_count = tweet.retweet_count
+
+            # get clean_text
+            clean_text = self.nlp.clean_text(text)
+
+            # get lang
+            lang_text = self.nlp.detectlang(clean_text)
+
+            # get sentiment
+            sentiment = ""
+            if lang_text  == "th":
+                sentiment = self.nlp.senti_th(clean_text)
+                #sentiment = "unknown"
+            elif lang_text == "en":
+                sentiment = self.nlp.senti_en(clean_text)
+            else:
+                sentiment = "neutral"
+
+            #data["total"] += 1
+            data[thisdate].append(
+                                { 
+                                 "index" : index_count,
+                                 "keyword" : keyword,
+                                 "create_at": create_at,
+                                 "tweet_id": id,
+                                 "lang" : lang_text,
+                                 "clear_text" : clean_text,
+                                 "raw_text" : text,
+                                 "hashtag" : hashtag,
+                                 "retweet_count" : re_count,
+                                 "favourite_count" : fav_count,
+                                 "sentiment" : sentiment
+                                }
+                            )
+            
+            index_count += 1
+            progress +=1
+            pbar.update(1)
+            eel.set_progress_text("Clawer Tweet - " + "Keyword : " + keyword + " Date : " + thisdate + " - " + str(progress) + "/" + str(limit))
+            eel.set_progress(limit,progress)
+            
+        pbar.total = index_count
+        pbar.close()
+        
+        eel.set_progress_text("Clawer Tweet - " + "Keyword : " + keyword + " Date : " + thisdate + " - " + "Success!")
+        eel.set_progress(progress,progress)
+        
+        try:
+            list_file = os.listdir(os.path.join(os.path.dirname(sys.argv[0]), "./database/twitter/"+keyword))
+        except:
+            print("No Folder : Creating Folder")
+            os.makedirs(os.path.join(os.path.dirname(sys.argv[0]), "./database/twitter/"+keyword))
+            list_file = os.listdir(os.path.join(os.path.dirname(sys.argv[0]), "./database/twitter/"+keyword))
+            
+        
+        if keyword+".json" in list_file:
+            print("have")
+        else:
+            with open(os.path.join(os.path.dirname(sys.argv[0]), "./database/twitter/"+keyword+"/"+thisdate+".json"), 'w', encoding='utf-8') as f:
+                json.dump(data, f, ensure_ascii=False, indent=4)
+        
+        
+        
+        return tweet_list
+    
+    def search(self,list_keyword,list_date):
+        
+        print("Searching -","Keyword :",list_keyword," _ Date :",list_date)
+        
+        keyword_date = {}
+        list_have_data = []
+        
+        sentiment = []
+        count_all = 0
+        count_pos = 0
+        count_neg = 0
+        count_neu = 0
+        
+        list_text = []
+        
+        related_words = []
+        
+        index_count = 0
+        
+        #set keyword have data date
+        for x in list_keyword:
+            keyword_date[x] = list_date.copy()
+        
+        #print("Keyword Date :",keyword_date)
+        
+        list_folder = os.listdir(os.path.join(os.path.dirname(sys.argv[0]), "./database/twitter/"))
+        
+        # filterkeyword
+        print("folder read :",list_folder)
+        print("folder read :",self.filterkeyword)
+        for i in self.filterkeyword:
+            if i in list_folder:
+                print(i)
+                list_folder.remove(i)
+        print("folder clean :",list_folder)
+
+        progress = 0
+        eel.set_progress(len(list_folder),0)
+
+        for folder in list_folder:
+            print("Folder :",folder)
+            progress += 1
+            eel.set_progress(len(list_folder),progress)
+            eel.set_progress_text("Searching - " + folder)
+            
+            list_file = os.listdir(os.path.join(os.path.dirname(sys.argv[0]), "./database/twitter/"+folder+"/"))
+            
+            #filter date !no use
+            no_have_date = []
+            for date in list_date:
+                if date not in list_file:
+                    no_have_date.append(date)
+            
+            for keyword in list_keyword:
+                for date in list_date:
+                    #print(keyword,folder,date+".json",list_file)
+                    #list_folder = os.listdir(os.path.join(os.path.dirname(sys.argv[0]), "./database/twitter/"+"#"+keyword))
+                    if date+".json" in list_file:
+                            with open(os.path.join(os.path.dirname(sys.argv[0]), "./database/twitter/"+folder+"/"+date+".json"), encoding='utf-8') as f:
+                                data = json.load(f)
+
+                            for i in range(0,len(data[date])):
+                                get_words = self.nlp.tokenize(data[date][i]["lang"],data[date][i]["clear_text"])
+                                for j in get_words:
+                                    if j.lower() == keyword.lower():
+                                        #print("aaaaaaaaaa")
+                                        date_raw = data[date][i]["create_at"]
+                                        x = date_raw.split("-")
+                                        date_convert = x[2]+"/"+x[1]+"/"+x[0]
+                                        list_have_data.append({"index" : index_count,"keyword" : data[date][i]["keyword"], "date" : date_convert, "text" : data[date][i]["clear_text"], "sentiment" : data[date][i]["sentiment"], "retweet" : data[date][i]["retweet_count"], "fav" : data[date][i]["favourite_count"], })
+                                        
+                                        if data[date][i]["sentiment"] == "positive":
+                                            count_pos += 1
+                                        elif data[date][i]["sentiment"] == "negative":
+                                            count_neg += 1
+                                        elif data[date][i]["sentiment"] == "neutral":
+                                            count_neu += 1
+                                        count_all +=1
+                                        
+                                        list_text.extend(self.nlp.nlp(keyword,data[date][i]["clear_text"]))
+                                        
+                                        if data[date][i]["create_at"] in keyword_date[keyword]:
+                                            #print("Delete :",keyword,":",keyword_date[keyword],":",data[date][i]["create_at"],":",keyword_date)
+                                            keyword_date[keyword].remove(data[date][i]["create_at"])
+                                        index_count += 1
+                                        break
+                                    
+                    else:
+                        pass
+                    
+        #print(list_have_data)
+        #print(keyword_date)
+        eel.set_progress_text("Searching - Done!")
+        
+        try:
+            sentiment = [str(int(count_pos/count_all * 100))+"%",str(int(count_neg/count_all * 100))+"%",str(int(count_neu/count_all * 100))+"%"]
+        except:
+            sentiment = [0,0,0]
+        
+        frq_word = self.nlp.frequency_word(list_text)
+        
+        for key in frq_word:
+            related_words.append({"count" : frq_word[key], "word": key})
+        
+        #return [list_have_data,sentiment,related_words]
+        list_date_1 = []
+        print(keyword_date)
+        for key in keyword_date:
+            if keyword_date[key] != []:
+                for x in keyword_date[key]:
+                    list_date_1.append(["#"+key, x])
+                    #self.thread_list.append(Thread(target=self.twitter_clawer, args=["#"+key, x, 1000]))
+
+        return [[list_have_data,sentiment,related_words],list_date_1]
+            
+        
+        
+    def get_twitter_tweet(self,keyword):
+        list_have_data = []
+        list_date = []
+        
+        sentiment = []
+        count_all = 0
+        count_pos = 0
+        count_neg = 0
+        count_neu = 0
+        
+        list_text = []
+        
+        related_words = []
+        
+        index_count = 0
+        
+        
+        list_datefile = os.listdir(os.path.join(os.path.dirname(sys.argv[0]), "./database/twitter/"+keyword))
+        for dateraw in list_datefile:
+            list_date.append(dateraw[0:-5])
+            
+        progress = 0
+        #eel.set_progress_text("Loading - "+ keyword)
+        #eel.set_progress(len(list_datefile),progress)
+        eel.set_progress_text("Loading Tweet - " + "Keyword : " + keyword + " - Date : " + list_date[0] + " - " + str(progress) + "/" + str(len(list_datefile)))
+        
+        for date in list_date:
+            with open(os.path.join(os.path.dirname(sys.argv[0]), "./database/twitter/"+keyword+"/"+date+".json"), encoding='utf-8') as f:
+                data = json.load(f)
+
+            for i in range(0,len(data[date])):
+                date_raw = data[date][i]["create_at"]
+                x = date_raw.split("-")
+                date_convert = x[2]+"/"+x[1]+"/"+x[0]
+                list_have_data.append({"index" : index_count,"keyword" : data[date][i]["keyword"], "date" : date_convert, "text" : data[date][i]["clear_text"], "sentiment" : data[date][i]["sentiment"], "retweet" : data[date][i]["retweet_count"], "fav" : data[date][i]["favourite_count"], })
+                
+                if data[date][i]["sentiment"] == "positive":
+                    count_pos += 1
+                elif data[date][i]["sentiment"] == "negative":
+                    count_neg += 1
+                elif data[date][i]["sentiment"] == "neutral":
+                    count_neu += 1
+                count_all +=1
+                list_text.extend(self.nlp.nlp(keyword[1:],data[date][i]["clear_text"]))
+                index_count += 1
+                
+            progress += 1
+            eel.set_progress_text("Loading Tweet - " + "Keyword : " + keyword + " - Date : " + date + " - " + str(progress) + "/" + str(len(list_datefile)))
+            eel.set_progress(len(list_datefile),progress)
+        
+        try:
+            sentiment = [str(int(count_pos/count_all * 100))+"%",str(int(count_neg/count_all * 100))+"%",str(int(count_neu/count_all * 100))+"%"]
+        except:
+            sentiment = [0,0,0]
+            
+        frq_word = self.nlp.frequency_word(list_text)
+        
+        for key in frq_word:
+            related_words.append({"count" : frq_word[key], "word": key})
+            
+        return [list_have_data,sentiment,related_words]
+            
+    
+    #============================================================================================================================================================================================
+    #
+    #============================================================================================================================================================================================
+        
+    def get_twitter_database(self):
+        list_data = []
+        
+        list_database = os.listdir(os.path.join(os.path.dirname(sys.argv[0]), "./database/twitter/"))
+        
+        datajson = {"total_keyword":0,"total_tweet":0,"keyword":{}}
+        for folder in list_database:
+            list_file = os.listdir(os.path.join(os.path.dirname(sys.argv[0]), "./database/twitter/"+folder+"/"))
+            datajson["total_keyword"] += 1
+            datajson["keyword"][folder] = {}
+            datajson["keyword"][folder]["total_days"] = 0
+            datajson["keyword"][folder]["total_tweets"] = 0
+            datajson["keyword"][folder]["date"] = {}
+            for date in list_file:
+                with open(os.path.join(os.path.dirname(sys.argv[0]), "./database/twitter/"+folder+"/"+date), encoding='utf-8') as f:
+                    data = json.load(f)
+                datajson["total_tweet"] += len(data[date[0:-5]])
+                datajson["keyword"][folder]["total_days"] += 1
+                datajson["keyword"][folder]["total_tweets"] += len(data[date[0:-5]])
+                datajson["keyword"][folder]["date"][date[0:-5]] = len(data[date[0:-5]])
+        
+        
+        #with open(os.path.join(os.path.dirname(sys.argv[0]), "./database/statistics_tweet.json"), 'w', encoding='utf-8') as f:
+        #        json.dump(datajson, f, ensure_ascii=False, indent=4)
+        
+        for database in list_database:
+            list_data.append([database, datajson["keyword"][database]["total_days"], datajson["keyword"][database]["total_tweets"]])
+        
+        return list_data
+    
+    def get_twitter_date(self,keyword):
+        date = []
+        list_date = os.listdir(os.path.join(os.path.dirname(sys.argv[0]), "./database/twitter/"+keyword+"/"))
+        for i in list_date:
+            date.append(i[0:-5])
+        return date
+    
+    def get_twitter_filterkeyword(self,keyword):
+        if keyword in self.filterkeyword:
+            return 1
+        else:
+            return 0
+        
+    def set_twitter_filterkeyword(self,keyword,state):
+        if(state == 0):
+            if keyword in self.filterkeyword:
+                self.filterkeyword.remove(keyword)
+        else:
+            if keyword not in self.filterkeyword:
+                self.filterkeyword.append(keyword)
+        print(self.filterkeyword)
+        
+    def twitter_deletekeyword(self,keyword):
+        list_database = os.listdir(os.path.join(os.path.dirname(sys.argv[0]), "./database/twitter/"))
+        if keyword in list_database:
+            shutil.rmtree(os.path.join(os.path.dirname(sys.argv[0]), "./database/twitter/"+keyword))
+            #os.rmdir(os.path.join(os.path.dirname(sys.argv[0]), "./database/twitter/"+keyword))
+        print(self.filterkeyword)
+        
+    def twitter_deletedate(self,keyword,date):
+        list_database = os.listdir(os.path.join(os.path.dirname(sys.argv[0]), "./database/twitter/"))
+        if keyword in list_database:
+            if os.path.exists(os.path.join(os.path.dirname(sys.argv[0]), "./database/twitter/"+keyword+"/"+date+".json")):
+              os.remove(os.path.join(os.path.dirname(sys.argv[0]), "./database/twitter/"+keyword+"/"+date+".json"))
+            else:
+              print("The file does not exist")
+        print("delete Success")
+        
+    def get_twitter_calendardate(self):
+        all_date = []
+        no_date = []
+        min_date = datetime.today().date()
+        min_date_int = 0
+        list_database = os.listdir(os.path.join(os.path.dirname(sys.argv[0]), "./database/twitter/"))
+        for folder in list_database:
+            if folder in self.filterkeyword:
+                continue
+            list_date = os.listdir(os.path.join(os.path.dirname(sys.argv[0]), "./database/twitter/"+folder+"/"))
+            for date in list_date:
+                thisday = datetime.strptime(date[0:-5], '%Y-%m-%d').date()
+                if thisday < min_date:
+                    min_date = datetime.strptime(date[0:-5], '%Y-%m-%d').date()
+                
+                if date[0:-5] not in all_date:
+                    all_date.append(date[0:-5])
+
+        delta = datetime.today().date() - min_date
+        if delta.days < 7:
+            min_date_int = 7
+        else:
+            min_date_int = delta.days
+            
+        for i in range(delta.days + 1):
+            day = min_date + timedelta(days=i)
+            if(str(day) not in all_date ) and (day <= datetime.today().date() - timedelta(days=7)):
+                no_date.append(str(day))
+                #print(str(day))
+        
+        print(min_date_int)
+        print(no_date)
+        
+        return [min_date_int,no_date]
+                    
+    def get_twitter_trend(self):
+        trend_list = []
+        woeid = 1225448
+        trends = self.api.get_place_trends(id = woeid)
+        for value in trends:
+            for trend in value['trends']:
+                #print(trend['name'])
+                trend_list.append(trend['name'])
+        return trend_list
+            
+if __name__ == "__main__":
+    test_Twitter = Twitter_API()
+    
+    #test_Twitter.twitter("#lisa","2022-04-06","2022-04-10")
+    
+    #test_Twitter.twitter_clawer("#jisoo","2022-04-10",50)
+    #test_Twitter.twitter_clawer("#iBeamKung","2022-04-08",40)
+    #test_Twitter.search(["lisa"],["2022-04-09"])
+    #test_Twitter.search(["lisa"],["2022-04-12"],filterkeyword=["#football"])
+    #test_Twitter.twitter_deletekeyword("#football")
+    #test_Twitter.get_twitter_calendardate()
+    #test_Twitter.twitter_deletedate("#lisa","2022-04-18")
+    #test_Twitter.get_twitter_database()
+    #print(test_Twitter.search_tweet("lisa","2022-04-06","2022-04-11",0))
+    #print(test_Twitter.get_twitter_trend())
+    #print(os.listdir(os.path.join(os.path.dirname(sys.argv[0]), "./database/twitter/")))
+    #print(os.path.isfile(os.path.join(os.path.dirname(sys.argv[0]),'./database/twitter/'+"#"+"dek65"+".csv")))
+    
+    """
+    startDate_in = "2022-04-04"
+    stopDate_in = "2022-04-04"
+        
+        
+        
+    def daterange(date1, date2):
+        for n in range(int ((date2 - date1).days)+1):
+            yield date1 + timedelta(n)
+            
+    startDate = [int(x) for x in startDate_in.split("-")]
+    stopDate = [int(x) for x in stopDate_in.split("-")]
+    
+    print(stopDate)
+            
+    start_dt = date(int(startDate[0]), startDate[1], startDate[2])
+    end_dt = date(stopDate[0], stopDate[1], stopDate[2])
+    for dt in daterange(start_dt, end_dt):
+        print(dt.strftime("%Y-%m-%d"))
+    """

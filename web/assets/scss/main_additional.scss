@@ -1,0 +1,104 @@
+* {
+    margin: 0;
+    padding: 0;
+}
+
+html,
+body {
+    background-color: #dfe6e9;
+    height: 100%;
+}
+
+.progress::-webkit-progress-value {
+    transition: width 0.25s ease;
+  }
+
+.tab-content {
+    display: none;
+  }
+.tab-content.is-active {
+    display: block;
+}
+
+.list-database {
+    height: 92%;
+    border-radius: 6px;
+    border: 0.1px solid #dbdbdb;
+
+    overflow-y:scroll;
+    scrollbar-width: none;
+}
+.list-database::-webkit-scrollbar {
+    /* This is the magic bit for WebKit */
+    display: none;
+  }
+
+.list-addweb {
+    //height: 92%;
+    //border-radius: 6px;
+    //border: 0.1px solid #dbdbdb;
+
+    overflow-y:scroll;
+    scrollbar-width: none;
+    margin-bottom: 0.5rem;
+}
+.list-addweb::-webkit-scrollbar {
+    /* This is the magic bit for WebKit */
+    display: none;
+  }
+
+.block:not(:last-child) {
+    margin-bottom: 0.5rem;
+}
+
+.tile.is-gapless {
+    .tile.is-parent {
+      padding: 0.25rem;
+    }
+    
+    .tile.is-vertical>.tile.is-child {
+      margin-bottom: 0.5rem !important;
+    }
+    
+    .notification {
+      border-radius: 0;
+    }
+  }
+
+#table-wrapper {
+    position: relative;
+}
+#table-scroll {
+    height: 500px;
+    overflow: auto;
+    margin-top: 20px;
+}
+#table-wrapper table {
+    table-layout:fixed;
+    overflow-x: auto;
+    display: block;
+    white-space: nowrap;
+    width: 1050px;
+}
+#table-wrapper table * {
+    font-size: 15px;
+    background: #fff;
+    color: black;
+}
+#table-wrapper table thead th .text {
+    position: absolute;
+    top: -20px;
+    z-index: 2;
+    height: 20px;
+    width: 35%;
+    border: 2px solid #95a5a6;
+}
+#table-wrapper table tbody{
+    display: table;
+    width: 100%;
+}
+#table-wrapper table tbody tr td {
+    font-size: 18px;
+    overflow: hidden;
+    width: 200px;
+}

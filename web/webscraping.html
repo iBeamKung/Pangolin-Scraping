@@ -1,0 +1,598 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css" rel="stylesheet" />
+
+        <link rel="stylesheet" href="assets/css/bulma.css" />
+        <link rel="stylesheet" href="assets/css/main_additional.css" />
+
+        <!-- <link href="assets/tabulator/dist/css/tabulator_bulma.css" rel="stylesheet"> -->
+        <link href="assets/tabulator-5.2/dist/css/tabulator_semanticui.css" rel="stylesheet">
+
+        <!-- JavaScript -->
+        <script src="//cdn.jsdelivr.net/npm/alertifyjs@1.13.1/build/alertify.min.js"></script>
+        <!-- CSS -->
+        <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/alertifyjs@1.13.1/build/css/alertify.min.css"/>
+        <!-- Default theme -->
+        <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/alertifyjs@1.13.1/build/css/themes/default.min.css"/>
+
+        <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/pepper-grinder/jquery-ui.css"/>
+        <link rel="stylesheet" href="https://cdn.rawgit.com/dubrox/Multiple-Dates-Picker-for-jQuery-UI/master/jquery-ui.multidatespicker.css"/>
+
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@4.0.0/animate.min.css"/>
+
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma-switch@2.0.4/dist/css/bulma-switch.min.css">
+
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma-quickview@2.0.0/dist/css/bulma-quickview.min.css">
+
+        <link rel="stylesheet" href="assets/bulma-tagsinput/dist/css/bulma-tagsinput.min.css">
+
+        <!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma-list/css/bulma-list.css"> -->
+
+
+        <title>Pangolin</title>
+    </head>
+    <body onload="startpage_webscraping();">
+        <div class="container is-fluid pt-5">
+            <div class="columns is-variable is-1">
+                <div class="column is-2">
+                    <div class="box block">
+                        <p class="title is-3">Pangolin Scraping</p>
+                        <p class="subtitle is-6">Scraping Application - Web Scraping</p>
+                        <div class="field is-grouped">
+                            <div class="buttons">
+
+                                <button
+                                    class="button is-link is-small"
+                                    onClick="window.location.reload();"
+                                >
+                                    Reload
+                                </button>
+
+                                <button
+                                    class="button is-link is-light is-small"
+                                    onClick="window.location.href='./twitter.html'""
+                                >
+                                    Twitter
+                                </button>
+                                <!--
+                                <button
+                                    class="button is-link is-light is-small"
+                                    onClick="window.location.href='./webscraping.html'""
+                                >
+                                    Web Scraping
+                                </button>
+                                -->
+                                <!--
+                                <button
+                                    class="button is-link is-light is-small"
+                                    onClick="test();"
+                                >
+                                    test
+                                </button>
+                                -->
+
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="box block">
+                        <div class="is-grouped">
+                            <div class="control">
+                                <div class="field">
+                                    <label class="label">🔍Search Web Clawer:</label>
+                                    <div class="control">
+                                      <input id="inputCrawler" class="input is-small" type="text" placeholder="Keyword">
+                                    </div>
+                                </div>
+                                <div class="field is-grouped">
+                                    <div class="control">
+                                      <button id="submitCrawler" onClick="sendSearch_web()" class="button is-info is-small">Search</button>
+                                      <button id="gotoCrawler" onClick="Crawler_web()" class="button is-danger is-small">Clawer !</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="box block" style="height:380px;">
+                        <label class="label">📁 Database :</label>
+                        <div class="list-database">
+                            <div id="website-database" class="list has-visible-pointer-controls has-hoverable-list-items">
+                                <!--
+                                <a class="list-item js-modal-trigger" data-target="modal-database-manager">
+                                    <div class="list-item-content">
+                                        <div class="list-item-title is-size-6">#Lisa</div>
+                                        <div class="list-item-description is-size-7">10 day - 1000 tweet</div>
+                                    </div>
+                                    <div class="list-item-controls">
+                                        <div class="buttons is-right">
+                                            <button class="button">
+                                                <span class="icon is-small">
+                                                    <i class="fas fa-ellipsis-h"></i>
+                                                </span>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </a>
+                                -->
+                            </div>
+                        </div>
+                        
+                    </div>
+
+                    <div id="modal-database-manager" class="modal">
+                        <div class="modal-background"></div>
+                        <div class="modal-card">
+                            <header class="modal-card-head">
+                                <p id="keyword-name" class="modal-card-title">Modal title</p>
+                                <input id="switch_keyword" type="checkbox" name="switch_keyword" class="switch is-rounded" checked="checked">
+                                <label for="switch_keyword"></label>
+                                <button class="delete" aria-label="close"></button>
+                            </header>
+                            <section class="modal-card-body">
+                                <!-- Content ... -->
+                                <div id="datelist" class="list has-visible-pointer-controls has-hoverable-list-items">
+                                    
+                                    <div class="list-item">
+                                        <div class="list-item-content">
+                                            <div class="list-item-title">2022-04-15</div>
+                                        </div>
+                                        <div class="list-item-controls">
+                                            <div class="buttons is-right">
+            
+                                                <button class="button is-danger">
+                                                    <span class="icon is-small">
+                                                        <i class="fa-solid fa-trash-can"></i>
+                                                    </span>
+                                                </button>
+            
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                </div>
+            
+                            </section>
+                            <footer class="modal-card-foot">
+                                <button class="button is-success" onClick="set_state_website()">Save</button>
+                                <button class="button">Cancel</button>
+                                <button class="button is-danger" onClick="delete_website()">Delete Keyword</button>
+                            </footer>
+                        </div>
+                    </div>
+
+                </div>
+                
+                <div class="column is-10">
+
+                    <div class="box" style="height:100%; overflow-y:auto;">
+
+                        <div class="tabs is-boxed is-small" >
+                            <ul>
+                              <li class="is-active">
+                                <a>
+                                  <span class="icon is-small"><i class="fa-solid fa-database" aria-hidden="true"></i></span>
+                                  <span>Datatable</span>
+                                </a>
+                              </li>
+                              <li>
+                                <a>
+                                  <span class="icon is-small"><i class="fa-solid fa-calculator" aria-hidden="true"></i></span>
+                                  <span>Statistics</span>
+                                </a>
+                              </li>
+                              <li>
+                                <a>
+                                  <span class="icon is-small"><i class="fa-solid fa-calculator" aria-hidden="true"></i></span>
+                                  <span>Clawer</span>
+                                </a>
+                              </li>
+                            </ul>
+                        </div>
+
+                        <div class="tabs-content">
+
+                            <div class="tab-content is-active">
+                                <div id="webdata-table">
+                                    <!-- Datatable Show here! -->
+                                </div>
+                            </div>
+
+                            <div class="tab-content">
+                                <h1 class="title is-2">Sentiment</h1>
+            
+                                <div class="tile is-ancestor is-6">
+
+                                    <div class="tile is-parent">
+                                        <article class="tile box is-child has-text-centered">
+                                            <p class="title">Positive</p>
+                                            <p id="positive-percent" class="subtitle is-size-3">--%</p>
+                                        </article>
+                                    </div>
+                                    <div class="tile is-parent">
+                                        <article class="tile box is-child has-text-centered">
+                                            <p class="title">Negative</p>
+                                            <p id="negative-percent" class="subtitle is-size-3">--%</p>
+                                        </article>
+                                    </div>
+                                    <div class="tile is-parent">
+                                        <article class="tile box is-child has-text-centered">
+                                            <p class="title">Neutral</p>
+                                            <p id="neutral-percent" class="subtitle is-size-3">--%</p>
+                                        </article>
+                                    </div>
+
+                                </div>
+                                
+                                <div class="columns">
+                                    <div class="column is-4">
+                                        <h1 class="title is-2">Related Word</h1>
+                                        <div id="webstat-table-1">
+            
+                                        </div>
+                                    </div>
+                                    <div class="column is-4">
+                                        <h1 class="title is-2">Related Links</h1>
+                                        <div id="webstat-table-2">
+            
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                            </div>
+
+                            <div class="tab-content">
+                                <div class="list-addweb" style="height:660px;">
+                                    <div class="box">
+                                        <label class="label">ABCNews</label>
+                                        <div class="field is-grouped">
+                                            <p class="control is-expanded">
+                                                <input id="abcnews" class="input" type="text" placeholder="Add webpage">
+                                            </p>
+                                            <p class="control">
+                                                <a class="button is-info" onClick="add_web_abcnews()">
+                                                    Clawer
+                                                </a>
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <div class="box">
+                                        <label class="label">Amarin</label>
+                                        <div class="field is-grouped">
+                                            <p class="control is-expanded">
+                                                <input id="amarin" class="input" type="text" placeholder="Add webpage">
+                                            </p>
+                                            <p class="control">
+                                                <a class="button is-info" onClick="add_web_amarin()">
+                                                    Clawer
+                                                </a>
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <div class="box">
+                                        <label class="label">BangkokPost</label>
+                                        <div class="field is-grouped">
+                                            <p class="control is-expanded">
+                                                <input id="bangkokpost" class="input" type="text" placeholder="Add webpage">
+                                            </p>
+                                            <p class="control">
+                                                <a class="button is-info" onClick="add_web_bangkokpost()">
+                                                    Clawer
+                                                </a>
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <div class="box">
+                                        <label class="label">BBC</label>
+                                        <div class="field is-grouped">
+                                            <p class="control is-expanded">
+                                                <input id="bbc" class="input" type="text" placeholder="Add webpage">
+                                            </p>
+                                            <p class="control">
+                                                <a class="button is-info" onClick="add_web_bbc()">
+                                                    Clawer
+                                                </a>
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <div class="box">
+                                        <label class="label">Businesstoday</label>
+                                        <div class="field is-grouped">
+                                            <p class="control is-expanded">
+                                                <input id="businesstoday" class="input" type="text" placeholder="Add webpage">
+                                            </p>
+                                            <p class="control">
+                                                <a class="button is-info" onClick="add_web_businesstoday()">
+                                                    Clawer
+                                                </a>
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <div class="box">
+                                        <label class="label">CBC</label>
+                                        <div class="field is-grouped">
+                                            <p class="control is-expanded">
+                                                <input id="cbc" class="input" type="text" placeholder="Add webpage">
+                                            </p>
+                                            <p class="control">
+                                                <a class="button is-info" onClick="add_web_cbc()">
+                                                    Clawer
+                                                </a>
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <div class="box">
+                                        <label class="label">CNN</label>
+                                        <div class="field is-grouped">
+                                            <p class="control is-expanded">
+                                                <input id="cnn" class="input" type="text" placeholder="Add webpage">
+                                            </p>
+                                            <p class="control">
+                                                <a class="button is-info" onClick="add_web_cnn()">
+                                                    Clawer
+                                                </a>
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <div class="box">
+                                        <label class="label">CryptoSiam</label>
+                                        <div class="field is-grouped">
+                                            <p class="control is-expanded">
+                                                <input id="cryptosiam" class="input" type="text" placeholder="Add webpage">
+                                            </p>
+                                            <p class="control">
+                                                <a class="button is-info" onClick="add_web_cryptosiam()">
+                                                    Clawer
+                                                </a>
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <div class="box">
+                                        <label class="label">Dailymail</label>
+                                        <div class="field is-grouped">
+                                            <p class="control is-expanded">
+                                                <input id="dailymail" class="input" type="text" placeholder="Add webpage">
+                                            </p>
+                                            <p class="control">
+                                                <a class="button is-info" onClick="add_web_dailymail()">
+                                                    Clawer
+                                                </a>
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <div class="box">
+                                        <label class="label">FoxBusiness</label>
+                                        <div class="field is-grouped">
+                                            <p class="control is-expanded">
+                                                <input id="foxbusiness" class="input" type="text" placeholder="Add webpage">
+                                            </p>
+                                            <p class="control">
+                                                <a class="button is-info" onClick="add_web_foxbusiness()">
+                                                    Clawer
+                                                </a>
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <div class="box">
+                                        <label class="label">Kaohoon</label>
+                                        <div class="field is-grouped">
+                                            <p class="control is-expanded">
+                                                <input id="kaohoon" class="input" type="text" placeholder="Add webpage">
+                                            </p>
+                                            <p class="control">
+                                                <a class="button is-info" onClick="add_web_kaohoon()">
+                                                    Clawer
+                                                </a>
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <div class="box">
+                                        <label class="label">Khaosod</label>
+                                        <div class="field is-grouped">
+                                            <p class="control is-expanded">
+                                                <input id="khaosod" class="input" type="text" placeholder="Add webpage">
+                                            </p>
+                                            <p class="control">
+                                                <a class="button is-info" onClick="add_web_khaosod()">
+                                                    Clawer
+                                                </a>
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <div class="box">
+                                        <label class="label">MRGOnline</label>
+                                        <div class="field is-grouped">
+                                            <p class="control is-expanded">
+                                                <input id="mrgonline" class="input" type="text" placeholder="Add webpage">
+                                            </p>
+                                            <p class="control">
+                                                <a class="button is-info" onClick="add_web_mrgonline()">
+                                                    Clawer
+                                                </a>
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <div class="box">
+                                        <label class="label">NBCNews</label>
+                                        <div class="field is-grouped">
+                                            <p class="control is-expanded">
+                                                <input id="nbcnews" class="input" type="text" placeholder="Add webpage">
+                                            </p>
+                                            <p class="control">
+                                                <a class="button is-info" onClick="add_web_nbcnews()">
+                                                    Clawer
+                                                </a>
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <div class="box">
+                                        <label class="label">Sanook</label>
+                                        <div class="field is-grouped">
+                                            <p class="control is-expanded">
+                                                <input id="sanook" class="input" type="text" placeholder="Add webpage">
+                                            </p>
+                                            <p class="control">
+                                                <a class="button is-info" onClick="add_web_sanook()">
+                                                    Clawer
+                                                </a>
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <div class="box">
+                                        <label class="label">Siambitcoin</label>
+                                        <div class="field is-grouped">
+                                            <p class="control is-expanded">
+                                                <input id="siambitcoin" class="input" type="text" placeholder="Add webpage">
+                                            </p>
+                                            <p class="control">
+                                                <a class="button is-info" onClick="add_web_siambitcoin()">
+                                                    Clawer
+                                                </a>
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <div class="box">
+                                        <label class="label">TBN</label>
+                                        <div class="field is-grouped">
+                                            <p class="control is-expanded">
+                                                <input id="tbn" class="input" type="text" placeholder="Add webpage">
+                                            </p>
+                                            <p class="control">
+                                                <a class="button is-info" onClick="add_web_tbn()">
+                                                    Clawer
+                                                </a>
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <div class="box">
+                                        <label class="label">Thairath</label>
+                                        <div class="field is-grouped">
+                                            <p class="control is-expanded">
+                                                <input id="thairath" class="input" type="text" placeholder="Add webpage">
+                                            </p>
+                                            <p class="control">
+                                                <a class="button is-info" onClick="add_web_thairath()">
+                                                    Clawer
+                                                </a>
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <div class="box">
+                                        <label class="label">TNN</label>
+                                        <div class="field is-grouped">
+                                            <p class="control is-expanded">
+                                                <input id="tnn" class="input" type="text" placeholder="Add webpage">
+                                            </p>
+                                            <p class="control">
+                                                <a class="button is-info" onClick="add_web_tnn()">
+                                                    Clawer
+                                                </a>
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <div class="box">
+                                        <label class="label">trueID</label>
+                                        <div class="field is-grouped">
+                                            <p class="control is-expanded">
+                                                <input id="trueid" class="input" type="text" placeholder="Add webpage">
+                                            </p>
+                                            <p class="control">
+                                                <a class="button is-info" onClick="add_web_trueid()">
+                                                    Clawer
+                                                </a>
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+            
+                        </div>
+
+                        <div class="block">
+                            <div class="level">
+                                <div class="level-left">
+                                    <div class="level-item">
+                                        <p class="subtitle is-5">
+                                            <strong>Progress : </strong>
+                                        </p>
+                                    </div>
+                                    <div class="level-item">
+                                        <p id="progress_text" class="subtitle is-5">
+                                            None
+                                        </p>
+                                    </div>
+                                </div>
+                                <div class="level-right">
+                                    <div class="level-item">
+                                        <button class="button is-link is-small" onClick="export_web_search()">Export</button>
+                                    </div>
+
+                                    <div class="level-item select is-link is-small">
+                                        <select id="filter-field">
+                                            <option value="index">Index</option>
+                                            <option value="link">Link</option>
+                                            <option value="create_at">Create at</option>
+                                            <option value="lang">Lang</option>
+                                            <option value="header">Header</option>
+                                            <option value="content">Content</option>
+                                            <option value="sentiment">Sentiment</option>
+                                            <option value="crawler_at">Retweet</option>
+                                            <option value="href_link">href</option>
+                                        </select>
+                                    </div>
+                                    <div class="level-item select is-link is-small">
+                                        <select id="filter-type">
+                                            <option value="=">=</option>
+                                            <option value="<"><</option>
+                                            <option value="<="><=</option>
+                                            <option value=">">></option>
+                                            <option value=">=">>=</option>
+                                            <option value="!=">!=</option>
+                                        </select>
+                                    </div>
+                                    <div class="level-item">
+                                        <input id="filter-value" class="input is-link is-small" type="text" placeholder="value to filter">
+                                    </div>
+                                    <div class="level-item">
+                                        <button id="filter-clear" class="button is-link is-small">Clear Filter</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <progress id="progress" class="progress is-medium is-success" value="0" max="100"></progress>
+
+                    </div>
+                    
+                </div>
+
+            </div>
+        </div>
+        
+        <script type="text/javascript" src="../eel.js"></script>
+
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+        <script src="https://code.jquery.com/ui/1.13.1/jquery-ui.js"></script>
+
+        <script type="text/javascript" src="assets/tabulator-5.2/dist/js/tabulator.js"></script>
+
+        <script src="https://cdn.rawgit.com/dubrox/Multiple-Dates-Picker-for-jQuery-UI/master/jquery-ui.multidatespicker.js"></script>
+
+        <script src="https://cdn.jsdelivr.net/npm/bulma-toast@2.4.1/dist/bulma-toast.min.js"></script>
+
+        <script src="https://cdn.jsdelivr.net/npm/bulma-quickview@2.0.0/dist/js/bulma-quickview.min.js"></script>
+
+        <script type="text/javascript" src="assets/bulma-tagsinput/dist/js/bulma-tagsinput.min.js"></script>
+
+        <script src="./script.js"></script>
+        <!--<script src="./twittercrawler.js"></script>-->
+        <script src="./webscraping.js"></script>
+        <script src="./script.js"></script>
+        <script src="./model.js"></script>
+        <script src="./quickview.js"></script>
+        <script src="./table_script_web.js"></script>
+    </body>
+</html>

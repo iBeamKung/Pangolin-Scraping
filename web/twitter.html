@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css" rel="stylesheet" />
+
+        <link rel="stylesheet" href="assets/css/bulma.css" />
+        <link rel="stylesheet" href="assets/css/main_additional.css" />
+
+        <!-- <link href="assets/tabulator/dist/css/tabulator_bulma.css" rel="stylesheet"> -->
+        <link href="assets/tabulator-5.2/dist/css/tabulator_semanticui.css" rel="stylesheet">
+
+        <!-- JavaScript -->
+        <script src="//cdn.jsdelivr.net/npm/alertifyjs@1.13.1/build/alertify.min.js"></script>
+        <!-- CSS -->
+        <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/alertifyjs@1.13.1/build/css/alertify.min.css"/>
+        <!-- Default theme -->
+        <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/alertifyjs@1.13.1/build/css/themes/default.min.css"/>
+
+        <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/pepper-grinder/jquery-ui.css"/>
+        <link rel="stylesheet" href="https://cdn.rawgit.com/dubrox/Multiple-Dates-Picker-for-jQuery-UI/master/jquery-ui.multidatespicker.css"/>
+
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@4.0.0/animate.min.css"/>
+
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma-switch@2.0.4/dist/css/bulma-switch.min.css">
+
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma-quickview@2.0.0/dist/css/bulma-quickview.min.css">
+
+        <link rel="stylesheet" href="assets/bulma-tagsinput/dist/css/bulma-tagsinput.min.css">
+
+        <!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma-list/css/bulma-list.css"> -->
+
+
+        <title>Pangolin</title>
+    </head>
+    <body  onload="startpage_twitter();">
+        <div class="container is-fluid pt-5">
+            <div class="columns is-variable is-1">
+                <div class="column is-2">
+                    <div class="box block">
+                        <p class="title is-3">Pangolin Scraping</p>
+                        <p class="subtitle is-6">Scraping Application - Twitter</p>
+                        <div class="field is-grouped">
+                            <div class="buttons">
+            
+                               <button
+                                    class="button is-link is-small"
+                                    onClick="window.location.reload();"
+                                >
+                                    Reload
+                                </button>
+                                <!--
+                                <button
+                                    class="button is-link is-light is-small"
+                                    onClick="window.location.href='./twitter.html'""
+                                >
+                                    Tweet
+                                </button>
+                                -->
+                                <button
+                                    class="button is-link is-light is-small"
+                                    onClick="window.location.href='./webscraping.html'""
+                                >
+                                    Web Scraping
+                                </button>
+                                
+                                <!--
+                                <button
+                                    class="button is-link is-light is-small"
+                                    onClick="test()"
+                                >
+                                    test
+                                </button>
+                                -->
+                            </div>
+                        </div>
+                    </div>
+                    <div class="box block">
+                        <div class="is-grouped">
+                            <div class="control">
+                                <div class="field">
+                                    <label class="label">🔍Twitter Keyword :</label>
+                                    <div class="control">
+                                      <input id="inputSearch" class="input is-small" type="text" placeholder="Search Tweet">
+                                    </div>
+                                </div>
+                                <div class="field">
+                                    <!--<input type="date" id="birthday" name="birthday">-->
+                                    <div class="field">
+                                        <label class="label">📅Select Date :</label>
+                                        <div class="control">
+                                            <input id="selectDate" class="input  is-small" name="selectDate" placeholder="Select Date" readonly>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="field is-grouped">
+                                    <div class="buttons">
+                                      <button id="submitSearch" onClick="sendSearch_tweet()" class="button is-info is-small">Search</button>
+                                      <button id="submitClawer" onClick="sendCrawler_tweet()" class="button is-info is-small">Crawler</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- <div class="box block">
+                        <label class="label">📈 Twitter Trend :</label>
+                        <div class="select is-multiple is-fullwidth">
+                            <select id="twitertrend" onDblClick="alert(this.value)" multiple size="8">
+            
+                              
+                            </select>
+                        </div>
+                    </div>-->
+                    <div class="box block" style="height:380px;"> <!-- 558 -->
+                        <label class="label">📁 Database :</label>
+                        <!--
+                        <div class="select is-multiple is-fullwidth">
+                            <select id="twiterdatabase" class="js-modal-trigger" data-target="modal-database-manager" multiple size="11">
+                            </select>
+                        </div>
+                        -->
+                        <div class="list-database">
+                            <div id="twiter-database" class="list has-visible-pointer-controls has-hoverable-list-items">
+                                <!--
+                                <a class="list-item js-modal-trigger" data-target="modal-database-manager">
+                                    <div class="list-item-content">
+                                        <div class="list-item-title is-size-6">#Lisa</div>
+                                        <div class="list-item-description is-size-7">10 day - 1000 tweet</div>
+                                    </div>
+                                    <div class="list-item-controls">
+                                        <div class="buttons is-right">
+                                            <button class="button">
+                                                <span class="icon is-small">
+                                                    <i class="fas fa-ellipsis-h"></i>
+                                                </span>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </a>
+                            -->
+                            </div>
+                        </div>
+                    </div>
+            
+                    <div id="modal-database-manager" class="modal">
+                        <div class="modal-background"></div>
+                        <div class="modal-card">
+                            <header class="modal-card-head">
+                                <p id="keyword-name" class="modal-card-title">Modal title</p>
+                                <input id="switch_keyword" type="checkbox" name="switch_keyword" class="switch is-rounded" checked="checked">
+                                <label for="switch_keyword"></label>
+                                <button class="delete" aria-label="close"></button>
+                            </header>
+                            <section class="modal-card-body">
+                                <!-- Content ... -->
+                                <div id="datelist" class="list has-visible-pointer-controls has-hoverable-list-items">
+                                    
+                                    <div class="list-item">
+                                        <div class="list-item-content">
+                                            <div class="list-item-title">2022-04-15</div>
+                                        </div>
+                                        <div class="list-item-controls">
+                                            <div class="buttons is-right">
+            
+                                                <button class="button is-danger">
+                                                    <span class="icon is-small">
+                                                        <i class="fa-solid fa-trash-can"></i>
+                                                    </span>
+                                                </button>
+            
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                </div>
+            
+                            </section>
+                            <footer class="modal-card-foot">
+                                <button class="button is-success" onClick="set_state_keyword()">Save</button>
+                                <button class="button">Cancel</button>
+                                <button class="button is-danger" onClick="delete_keyword()">Delete Keyword</button>
+                            </footer>
+                        </div>
+                    </div>
+                </div>
+                <div class="column is-10">
+                    <div>
+                    <div class="box" style="height:100%; overflow-y:auto;"><!-- 970 930 -->
+                        
+                        <div class="tabs is-boxed is-small" >
+                            <ul>
+                              <li class="is-active">
+                                <a>
+                                  <span class="icon is-small"><i class="fa-solid fa-database" aria-hidden="true"></i></span>
+                                  <span>Datatable</span>
+                                </a>
+                              </li>
+                              <li>
+                                <a>
+                                  <span class="icon is-small"><i class="fa-solid fa-calculator" aria-hidden="true"></i></span>
+                                  <span>Statistics</span>
+                                </a>
+                              </li>
+                            </ul>
+                        </div>
+            
+                        <div class="tabs-content">
+                            <div class="tab-content is-active">
+                                <div id="tweetdata-table">
+            
+                                </div>
+                            </div>
+                            <div class="tab-content">
+                                <h1 class="title is-2">Sentiment</h1>
+            
+                                <div class="tile is-ancestor is-6">
+                                    <div class="tile is-parent">
+                                        <article class="tile box is-child has-text-centered">
+                                            <p class="title">Positive</p>
+                                            <p id="positive-percent" class="subtitle is-size-3">--%</p>
+                                        </article>
+                                    </div>
+                                    <div class="tile is-parent">
+                                        <article class="tile box is-child has-text-centered">
+                                            <p class="title">Negative</p>
+                                            <p id="negative-percent" class="subtitle is-size-3">--%</p>
+                                        </article>
+                                    </div>
+                                    <div class="tile is-parent">
+                                        <article class="tile box is-child has-text-centered">
+                                            <p class="title">Neutral</p>
+                                            <p id="neutral-percent" class="subtitle is-size-3">--%</p>
+                                        </article>
+                                    </div>
+                                </div>
+            
+                                <h1 class="title is-2">Related words</h1>
+            
+                                <div id="tweetstat-table">
+            
+                                </div>
+                                
+                                <!--
+                                <div style="height:834px;">
+                                    adaasdasdasdas
+                                </div>
+                                -->
+                            </div>
+            
+                        </div>
+            
+                        <div class="block">
+                            <div class="level">
+                                <div class="level-left">
+                                    <div class="level-item">
+                                        <p class="subtitle is-5">
+                                            <strong>Progress : </strong>
+                                        </p>
+                                    </div>
+                                    <div class="level-item">
+                                        <p id="progress_text" class="subtitle is-5">
+                                            None
+                                        </p>
+                                    </div>
+                                </div>
+                                <div class="level-right">
+
+                                    <div class="level-item">
+                                        <button class="button is-link is-small" onClick="export_tweet_search()">Export</button>
+                                    </div>
+
+                                    <div class="level-item select is-link is-small">
+                                        <select id="filter-field">
+                                            <option value="index">Index</option>
+                                            <option value="keyword">Keyword</option>
+                                            <option value="date">Date</option>
+                                            <option value="sentiment">Sentiment</option>
+                                            <option value="retweet">Retweet</option>
+                                            <option value="fav">Favorite</option>
+                                        </select>
+                                    </div>
+
+                                    <div class="level-item select is-link is-small">
+                                        
+                                        <select id="filter-type">
+                                            <option value="=">=</option>
+                                            <option value="<"><</option>
+                                            <option value="<="><=</option>
+                                            <option value=">">></option>
+                                            <option value=">=">>=</option>
+                                            <option value="!=">!=</option>
+                                        </select>
+                                    </div>
+
+                                    <div class="level-item">
+                                        <input id="filter-value" class="input is-link is-small" type="text" placeholder="value to filter">
+                                    </div>
+
+                                    <div class="level-item">
+                                        <button id="filter-clear" class="button is-link is-small">Clear Filter</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <progress id="progress" class="progress is-medium is-success" value="0" max="100"></progress>
+
+                    </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <script type="text/javascript" src="../eel.js"></script>
+
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+        <script src="https://code.jquery.com/ui/1.13.1/jquery-ui.js"></script>
+
+        <script type="text/javascript" src="assets/tabulator-5.2/dist/js/tabulator.js"></script>
+
+        <script src="https://cdn.rawgit.com/dubrox/Multiple-Dates-Picker-for-jQuery-UI/master/jquery-ui.multidatespicker.js"></script>
+
+        <script src="https://cdn.jsdelivr.net/npm/bulma-toast@2.4.1/dist/bulma-toast.min.js"></script>
+
+        <script src="https://cdn.jsdelivr.net/npm/bulma-quickview@2.0.0/dist/js/bulma-quickview.min.js"></script>
+
+        <script type="text/javascript" src="assets/bulma-tagsinput/dist/js/bulma-tagsinput.min.js"></script>
+
+        <script src="./script.js"></script>
+        <script src="./twittercrawler.js"></script>
+        <script src="./webscraping.js"></script>
+        <script src="./script.js"></script>
+        <script src="./model.js"></script>
+        <script src="./quickview.js"></script>
+        <script src="./table_script.js"></script>
+    </body>
+</html>
